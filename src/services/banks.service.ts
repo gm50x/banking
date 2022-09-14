@@ -75,9 +75,13 @@ export class BanksService {
     const { provider, data: allBanks } = await this.getAll();
     const data = allBanks.find((bank) => bank.code === code);
 
-    return {
-      provider,
-      data,
-    };
+    return { provider, data };
+  }
+
+  async getByISPB(ispb: string): Promise<BankResponse> {
+    const { provider, data: allBanks } = await this.getAll();
+    const data = allBanks.find((bank) => bank.ispb === ispb);
+
+    return { provider, data };
   }
 }
