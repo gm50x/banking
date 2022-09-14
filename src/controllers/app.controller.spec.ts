@@ -1,6 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { BanksController } from './banks.controller';
-import { BanksService } from '../services';
+import {
+  BacenBanksService,
+  BanksService,
+  FallbackBanksService,
+} from '../services';
 import { HttpService } from '@nestjs/axios';
 
 describe('AppController', () => {
@@ -12,6 +16,8 @@ describe('AppController', () => {
       controllers: [BanksController],
       providers: [
         BanksService,
+        BacenBanksService,
+        FallbackBanksService,
         { provide: HttpService, useValue: {} },
         { provide: 'BACEN_BANKS_URL', useValue: 'NULL' },
         { provide: 'BANKS_FALLBACK', useValue: [] },

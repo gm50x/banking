@@ -40,4 +40,29 @@ export class BanksService {
         })),
       );
   }
+
+  async findByName(name: string): Promise<BanksResponse> {
+    const normalize = (value: string) =>
+      value.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+    const upperIncludes = (elm = '', search = '') =>
+      elm.toUpperCase().includes(search.toUpperCase());
+
+    const allBanks = await this.getAll();
+
+    const normalizedName = normalize(name);
+
+    const data = allBanks.data.filter(
+      (x) =>
+        upperIncludes(normalize(x.fullName), normalizedName) ||
+        upperIncludes(x.name, normalizedName),
+    );
+
+    const output = {
+      data,
+      provider: allBanks.provider,
+    };
+
+    return output;
+  }
 }
