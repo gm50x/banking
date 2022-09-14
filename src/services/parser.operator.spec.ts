@@ -44,9 +44,9 @@ const _banks = [
   },
 ];
 
-const expectedOutput = Object.freeze([
+const expectedOutput = Object.freeze(
   _banks.map((x) => Object.freeze(new Bank(x))),
-]);
+);
 
 describe('parseBacenCSV', () => {
   it('parse BACEN banks list csv', () => {
