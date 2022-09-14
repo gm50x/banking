@@ -66,7 +66,7 @@ export class BanksController {
 
     if (!output || !output.data) {
       throw new NotFoundException(
-        `Bank with code ${rawValue} could not be found!`,
+        `Bank with ${type.toLowerCase()} ${rawValue} could not be found!`,
       );
     }
 
