@@ -6,7 +6,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
-import { Bank, BankResponse, BanksResponse } from '../models';
+import { BankResponse, BanksResponse } from '../models';
 import { BanksService } from '../services';
 
 @Controller('banks')

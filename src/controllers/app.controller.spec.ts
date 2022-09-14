@@ -1,22 +1,54 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { BanksController } from './banks.controller';
+import { BanksService } from '../services';
+import { HttpService } from '@nestjs/axios';
 
 describe('AppController', () => {
-  let appController: AppController;
+  let subject: BanksController;
+  let service: BanksService;
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
-      controllers: [AppController],
-      providers: [AppService],
+      controllers: [BanksController],
+      providers: [
+        BanksService,
+        { provide: HttpService, useValue: {} },
+        { provide: 'BACEN_BANKS_URL', useValue: 'NULL' },
+        { provide: 'BANKS_FALLBACK', useValue: [] },
+      ],
     }).compile();
 
-    appController = app.get<AppController>(AppController);
+    subject = app.get(BanksController);
+    service = app.get(BanksService);
   });
 
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+  describe('GET banks', () => {
+    it('should not ring the bell', async () => {
+      jest
+        .spyOn(service, 'getAll')
+        .mockImplementation(async () => ({ data: [], provider: 'MOCK' }));
+
+      const actual = await subject.getAll();
+      expect(actual.provider).toBe('MOCK');
+    });
+
+    it('should return a list of banks', async () => {
+      const expected = Object.freeze([
+        Object.freeze({
+          code: 100,
+          fullName: 'Mocky Bank',
+          ispb: 'MOCK',
+          name: 'Mock',
+        }),
+      ]);
+      jest.spyOn(service, 'getAll').mockImplementation(async () => ({
+        data: [expected[0]],
+        provider: 'MOCK',
+      }));
+
+      const actual = await subject.getAll();
+      expect([actual.data[0]]).toStrictEqual(expected);
+      expect(actual.provider).toBe('MOCK');
     });
   });
 });
