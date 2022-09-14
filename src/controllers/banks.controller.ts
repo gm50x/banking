@@ -53,26 +53,20 @@ export class BanksController {
   async getByCodeOrISPB(
     @Param('codeOrISPB') prefixedParam: string,
   ): Promise<BankResponse> {
-    const [type, codeOrISPB] = prefixedParam.includes(':')
-      ? prefixedParam.split(':').map((x) => x.toLowerCase())
-      : ['code', prefixedParam]; // assumption: search by code
+    const [type, rawValue] = prefixedParam.includes(':')
+      ? prefixedParam.split(':')
+      : ['code', prefixedParam]; // if no prefixed params we assume it's a code
 
     if (!['code', 'ispb'].includes(type)) {
       throw new BadRequestException(`unknown type ${type}`);
     }
 
-    const executor = {
-      ispb: this.service.getByISPB.bind(this.service),
-      code: this.service.getByCode.bind(this.service),
-    };
-
-    const parsedCodeOrISPB = type === 'code' ? Number(codeOrISPB) : codeOrISPB;
-
-    const output: BankResponse = await executor[type](parsedCodeOrISPB);
+    const value = type === 'code' ? Number(rawValue) : rawValue;
+    const output = await this.service.getBy({ [type]: value });
 
     if (!output || !output.data) {
       throw new NotFoundException(
-        `Bank with code ${codeOrISPB} could not be found!`,
+        `Bank with code ${rawValue} could not be found!`,
       );
     }
 
